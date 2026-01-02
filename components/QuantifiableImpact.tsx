@@ -55,7 +55,7 @@ export function QuantifiableImpact() {
       className="section"
       style={{
         backgroundColor: "#000000",
-        padding: "6rem 0",
+        padding: "12rem 0",
       }}
     >
       <div className="container">

@@ -264,7 +264,7 @@ a:hover {
 /* Utility classes */
 .container {
   width: 100%;
-  max-width: 1376px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 0 var(--spacing-6);
 }

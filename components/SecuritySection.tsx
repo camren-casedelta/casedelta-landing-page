@@ -1,0 +1,166 @@
+"use client";
+
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { Lock, Shield, FileCheck } from "lucide-react";
+
+export function SecuritySection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
+
+  const features = [
+    { icon: Shield, label: "Bank-grade encryption" },
+    { icon: Lock, label: "Zero-knowledge architecture" },
+    { icon: FileCheck, label: "Continuous compliance monitoring" },
+  ];
+
+  // Cycle through features every 3 seconds
+  useEffect(() => {
+    if (!isInView) return;
+
+    const interval = setInterval(() => {
+      setCurrentFeatureIndex((prev) => (prev + 1) % features.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isInView, features.length]);
+
+  return (
+    <section
+      ref={ref}
+      className="section"
+      style={{
+        backgroundColor: "#000000",
+        color: "#FFFFFF",
+        padding: "18rem 0",
+      }}
+    >
+      <div className="flex items-center justify-center px-6">
+        <div className="grid md:grid-cols-2 gap-20 items-center max-w-6xl">
+          {/* Left: Heading and Subheading */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+            transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
+            className="flex flex-col items-start"
+          >
+            {/* Main Heading */}
+            <h2
+              className="mb-6"
+              style={{
+                fontSize: "clamp(28px, 5vw, 48px)",
+                fontWeight: 400,
+                lineHeight: 1.2,
+                letterSpacing: "-0.015em",
+                color: "#FFFFFF",
+              }}
+            >
+              Secure by Design.
+              <br />
+              Built for Legal.
+            </h2>
+
+            {/* Subheading */}
+            <p
+              className="mb-12"
+              style={{
+                fontSize: "var(--font-size-large)",
+                color: "rgba(255, 255, 255, 0.7)",
+                lineHeight: 1.6,
+                fontWeight: 400,
+              }}
+            >
+              Your client data is protected with enterprise-grade security.
+              We're built to meet the stringent requirements of legal practices.
+            </p>
+
+            {/* Learn More Link */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={isInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <a
+                href="/security"
+                className="inline-flex items-center gap-2 group hover:opacity-70 transition-opacity"
+                style={{
+                  fontSize: "var(--font-size-base)",
+                  color: "rgba(255, 255, 255, 0.7)",
+                  textDecoration: "none",
+                }}
+              >
+                <span>Our AI and security policy</span>
+                <span className="group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
+              </a>
+            </motion.div>
+          </motion.div>
+
+          {/* Right: Cycling Feature Animation */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
+            transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1], delay: 0.2 }}
+            className="relative h-64 flex items-center justify-center"
+          >
+            <AnimatePresence mode="wait">
+              {features.map((feature, index) => {
+                if (index !== currentFeatureIndex) return null;
+                const Icon = feature.icon;
+
+                return (
+                  <motion.div
+                    key={feature.label}
+                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                    transition={{ duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
+                    className="absolute inset-0 flex flex-col items-center justify-center text-center px-8"
+                  >
+                    <Icon
+                      size={48}
+                      className="mb-6"
+                      style={{
+                        color: "rgba(255, 255, 255, 0.9)",
+                        strokeWidth: 1.5,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: "var(--font-size-h3)",
+                        color: "rgba(255, 255, 255, 0.95)",
+                        fontWeight: 400,
+                        lineHeight: 1.4,
+                      }}
+                    >
+                      {feature.label}
+                    </span>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+
+            {/* Progress Indicators */}
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {features.map((_, index) => (
+                <div
+                  key={index}
+                  className="h-1 w-8 rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor:
+                      index === currentFeatureIndex
+                        ? "rgba(255, 255, 255, 0.8)"
+                        : "rgba(255, 255, 255, 0.2)",
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}

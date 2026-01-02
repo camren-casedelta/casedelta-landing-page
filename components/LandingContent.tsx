@@ -5,6 +5,7 @@ import { SocialProof } from "@/components/SocialProof";
 import { SectionHeader } from "@/components/SectionHeader";
 import { QuantifiableImpact } from "@/components/QuantifiableImpact";
 import { Testimonials } from "@/components/Testimonials";
+import { SecuritySection } from "@/components/SecuritySection";
 
 interface LandingContentProps {
   heroVariant: "side" | "bottom";
@@ -26,7 +27,6 @@ export function LandingContent({ heroVariant }: LandingContentProps) {
         {/* Section Header - Like Harvey's "Augment All of Your Work..." */}
         <SectionHeader
           title="Streamline Your Entire Document Collection Workflow"
-          subtitle="Automate reminders, verify uploads, and get the right documents faster—all on one secure platform built specifically for legal professionals."
         />
 
         {/* Value Proposition 1 */}
@@ -93,77 +93,247 @@ export function LandingContent({ heroVariant }: LandingContentProps) {
         {/* Testimonials Section */}
         <Testimonials />
 
+        {/* Security Section */}
+        <SecuritySection />
+
         {/* CTA Section */}
         <section
           className="section"
-          style={{ backgroundColor: "var(--color-background)" }}
+          style={{ backgroundColor: "var(--color-surface)", padding: "8rem 0" }}
         >
-          <div className="container">
-            <div className="max-w-3xl mx-auto text-center">
+          <div className="container max-w-4xl">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <h2
-                className="mb-8"
                 style={{
-                  fontSize: "var(--font-size-h2)",
-                  lineHeight: "var(--line-height-tight)",
-                  fontWeight: "var(--font-weight-semibold)",
+                  fontSize: "clamp(2rem, 4vw, 3rem)",
+                  lineHeight: "1.2",
+                  fontWeight: "400",
                   color: "var(--color-text-high-contrast)",
+                  letterSpacing: "-0.01em",
                 }}
               >
-                Ready to transform your document collection?
+                Stop Chasing Documents.
+                <br />
+                <span style={{ color: "var(--color-text-secondary)" }}>
+                  Start Getting Results.
+                </span>
               </h2>
 
-              <p
-                className="mb-10"
+              <button
+                className="px-8 py-4 rounded-lg transition-all hover:opacity-90 flex-shrink-0"
                 style={{
-                  fontSize: "var(--font-size-large)",
-                  lineHeight: "var(--line-height-relaxed)",
-                  color: "var(--color-text-secondary)",
+                  backgroundColor: "var(--color-button-primary)",
+                  color: "var(--color-button-primary-text)",
+                  fontSize: "var(--font-size-base)",
+                  fontWeight: "var(--font-weight-medium)",
                 }}
               >
-                Join hundreds of legal professionals who've already streamlined
-                their workflows with CaseDelta.
-              </p>
-
-              <div className="flex gap-4 justify-center flex-wrap">
-                <button
-                  className="px-8 py-4 rounded-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  style={{
-                    backgroundColor: "var(--color-button-primary)",
-                    color: "var(--color-button-primary-text)",
-                    fontSize: "var(--font-size-base)",
-                    fontWeight: "var(--font-weight-medium)",
-                    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  Start Free Trial
-                </button>
-
-                <button
-                  className="px-8 py-4 rounded-lg border transition-all hover:bg-[var(--color-surface-hover)] hover:border-[var(--color-text-tertiary)]"
-                  style={{
-                    borderColor: "var(--color-border)",
-                    color: "var(--color-text-primary)",
-                    fontSize: "var(--font-size-base)",
-                    fontWeight: "var(--font-weight-medium)",
-                  }}
-                >
-                  Schedule Demo
-                </button>
-              </div>
+                Request Demo
+              </button>
             </div>
           </div>
         </section>
 
         {/* Footer */}
         <footer
-          className="py-12 border-t"
+          className="py-16 border-t"
           style={{
-            backgroundColor: "var(--color-background)",
+            backgroundColor: "var(--color-surface)",
             borderColor: "var(--color-border)",
           }}
         >
           <div className="container">
-            <div className="text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-12">
+              {/* Product */}
+              <div>
+                <h3
+                  className="mb-4 uppercase tracking-wider"
+                  style={{
+                    fontSize: "var(--font-size-small)",
+                    color: "var(--color-text-tertiary)",
+                    fontWeight: "var(--font-weight-medium)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  Product
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="#features"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Features
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="#pricing"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Pricing
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/security"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Security
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Company */}
+              <div>
+                <h3
+                  className="mb-4 uppercase tracking-wider"
+                  style={{
+                    fontSize: "var(--font-size-small)",
+                    color: "var(--color-text-tertiary)",
+                    fontWeight: "var(--font-weight-medium)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  Company
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="/about"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      About
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/careers"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Careers
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Legal */}
+              <div>
+                <h3
+                  className="mb-4 uppercase tracking-wider"
+                  style={{
+                    fontSize: "var(--font-size-small)",
+                    color: "var(--color-text-tertiary)",
+                    fontWeight: "var(--font-weight-medium)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  Legal
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="/terms"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Terms of Use
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/privacy"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Privacy Policy
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Contact */}
+              <div>
+                <h3
+                  className="mb-4 uppercase tracking-wider"
+                  style={{
+                    fontSize: "var(--font-size-small)",
+                    color: "var(--color-text-tertiary)",
+                    fontWeight: "var(--font-weight-medium)",
+                    letterSpacing: "0.1em",
+                  }}
+                >
+                  Contact
+                </h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a
+                      href="/demo"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Request Demo
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/sales"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-primary)",
+                        textDecoration: "none",
+                      }}
+                      className="hover:opacity-70 transition-opacity"
+                    >
+                      Sales
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div
+              className="pt-8 border-t text-center"
+              style={{ borderColor: "var(--color-border)" }}
+            >
               <p
                 style={{
                   fontSize: "var(--font-size-small)",

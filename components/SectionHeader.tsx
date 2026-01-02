@@ -19,6 +19,8 @@ export function SectionHeader({ title, subtitle }: SectionHeaderProps) {
       className="section"
       style={{
         backgroundColor: "var(--color-surface)",
+        paddingTop: "8rem",
+        paddingBottom: "4.5rem",
       }}
     >
       <div className="container">
@@ -29,7 +31,7 @@ export function SectionHeader({ title, subtitle }: SectionHeaderProps) {
           className="max-w-4xl mx-auto text-center"
         >
           <h2
-            className="mb-6 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl"
+            className="text-3xl sm:text-4xl lg:text-5xl xl:text-[3.5rem]"
             style={{
               lineHeight: "var(--line-height-tight)",
               fontWeight: "var(--font-weight-regular)",

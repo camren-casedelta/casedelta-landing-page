@@ -22,14 +22,6 @@ const testimonials: Testimonial[] = [
     company: "Mitchell & Associates",
     imagePath: "/images/testimonial.jpg",
   },
-  {
-    quote:
-      "The automatic reminders are a game-changer. I haven't had to send a single 'just checking in on those documents' email in months. My clients actually respond now and I can focus on actual legal work.",
-    author: "James Chen",
-    title: "Senior Attorney",
-    company: "Chen Legal Group",
-    imagePath: "/images/testimonial.jpg",
-  },
 ];
 
 function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; index: number }) {
@@ -42,7 +34,7 @@ function TestimonialCard({ testimonial, index }: { testimonial: Testimonial; ind
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
       transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
-      className="relative mb-32 lg:mb-56 overflow-hidden rounded-2xl"
+      className="relative overflow-hidden rounded-2xl"
       style={{
         minHeight: "600px",
       }}
@@ -113,7 +105,7 @@ export function Testimonials() {
       className="section"
       style={{
         backgroundColor: "var(--color-surface)",
-        padding: "6rem 0",
+        padding: "12rem 0",
       }}
     >
       <div className="container">
