@@ -15,7 +15,7 @@ type Variant = typeof VARIANTS[number]
 const COOKIE_VARIANT = 'casedelta_variant'
 const COOKIE_DISTINCT_ID = 'casedelta_distinct_id'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Safety check: Only enable A/B testing if env var is explicitly set to 'true'
   const abTestingEnabled = process.env.NEXT_PUBLIC_ENABLE_AB_TESTING === 'true'
 
