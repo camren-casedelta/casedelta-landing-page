@@ -1,10 +1,29 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { navigationData } from "./navigation/navigationData";
 
 export function Navbar() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [hasReachedWorkflow, setHasReachedWorkflow] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [openDropdownId, setOpenDropdownId] = useState<string | null>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState({
+    left: 0,
+    width: 0,
+    opacity: 0,
+  });
+  const [lastIndicatorPosition, setLastIndicatorPosition] = useState({
+    left: 0,
+    width: 0,
+  });
+  const [dropdownContentKey, setDropdownContentKey] = useState<string>("");
+  const [hoveredDropdownItem, setHoveredDropdownItem] = useState<string | null>(null);
+  const navbarInnerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   useEffect(() => {
     // Get initial theme
@@ -25,6 +44,102 @@ export function Navbar() {
     return () => observer.disconnect();
   }, []);
 
+  // Watch for when the workflow section comes into view
+  useEffect(() => {
+    const workflowSection = document.getElementById("workflow-section");
+    if (!workflowSection) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Once the section is reached, keep it true (don't set back to false)
+        if (entry.isIntersecting) {
+          setHasReachedWorkflow(true);
+        }
+      },
+      { threshold: 0, rootMargin: "0px 0px -80% 0px" }
+    );
+
+    observer.observe(workflowSection);
+
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Only hide navbar if we've reached the workflow section
+      if (!hasReachedWorkflow) {
+        setIsVisible(true);
+        setLastScrollY(currentScrollY);
+        return;
+      }
+
+      // After reaching workflow section, hide on scroll down, show on scroll up
+      if (currentScrollY > lastScrollY) {
+        // Scrolling down - hide navbar
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - show navbar
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY, hasReachedWorkflow]);
+
+  // Update dropdown content with animation key
+  useEffect(() => {
+    if (openDropdownId) {
+      // Delay to allow smooth fade-out before content swap
+      const timer = setTimeout(() => {
+        setDropdownContentKey(openDropdownId);
+      }, 200);
+      return () => clearTimeout(timer);
+    } else {
+      // Clear content after dropdown closes
+      const timer = setTimeout(() => {
+        setDropdownContentKey("");
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [openDropdownId]);
+
+  // Animated underline indicator
+  useEffect(() => {
+    if (!hoveredItem || !navbarInnerRef.current) {
+      // Keep the last position, just fade out opacity
+      setIndicatorStyle((prev) => ({
+        ...prev,
+        opacity: 0,
+      }));
+      return;
+    }
+
+    const itemElement = itemRefs.current.get(hoveredItem);
+    if (!itemElement) return;
+
+    const navbarRect = navbarInnerRef.current.getBoundingClientRect();
+    const itemRect = itemElement.getBoundingClientRect();
+
+    const newPosition = {
+      left: itemRect.left - navbarRect.left,
+      width: itemRect.width,
+    };
+
+    // Save the last position for smooth transitions
+    setLastIndicatorPosition(newPosition);
+
+    setIndicatorStyle({
+      ...newPosition,
+      opacity: 1,
+    });
+  }, [hoveredItem]);
+
   const logoSrc = theme === "dark"
     ? "/assets/branding/trimmed-logo-white.png"
     : "/assets/branding/trimmed-logo.png";
@@ -34,15 +149,22 @@ export function Navbar() {
     : "rgba(255, 255, 255, 0.95)";
 
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 border-b backdrop-blur-md"
+    <div
+      className="fixed top-0 left-0 right-0 z-50"
       style={{
-        backgroundColor: navBgColor,
-        borderColor: "var(--color-border)",
+        transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+        transition: "transform 0.3s ease-in-out",
       }}
     >
-      <div className="container">
-        <div className="flex items-center justify-between h-20">
+      <nav
+        className="border-b backdrop-blur-md"
+        style={{
+          backgroundColor: navBgColor,
+          borderColor: "var(--color-border)",
+        }}
+      >
+        <div className="container">
+          <div ref={navbarInnerRef} className="flex items-center justify-between h-24 relative">
           {/* Logo */}
           <div className="flex items-center">
             <a
@@ -62,57 +184,125 @@ export function Navbar() {
 
           {/* Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#features"
-              className="transition-colors hover:opacity-80"
+            {navigationData.map((item) => (
+              <div
+                key={item.id}
+                onMouseEnter={() => {
+                  setHoveredItem(item.id);
+                  if (item.dropdown) setOpenDropdownId(item.id);
+                }}
+                onMouseLeave={() => {
+                  setHoveredItem(null);
+                }}
+              >
+                {item.dropdown ? (
+                  <button
+                    className="flex items-center gap-1 py-2 px-1 transition-colors hover:text-[var(--color-text-high-contrast)]"
+                    style={{
+                      fontSize: "var(--font-size-base)",
+                      fontWeight: "var(--font-weight-medium)",
+                      color: "var(--color-text-secondary)",
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                    ref={(el) => {
+                      if (el) itemRefs.current.set(item.id, el);
+                    }}
+                  >
+                    <span>{item.label}</span>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      className="transition-transform"
+                      style={{
+                        transform: openDropdownId === item.id ? "rotate(180deg)" : "rotate(0deg)",
+                      }}
+                    >
+                      <path
+                        d="M3 4.5L6 7.5L9 4.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                ) : (
+                  <a
+                    href={item.href}
+                    className="py-2 px-1 transition-colors hover:text-[var(--color-text-high-contrast)]"
+                    style={{
+                      fontSize: "var(--font-size-base)",
+                      fontWeight: "var(--font-weight-medium)",
+                      color: "var(--color-text-secondary)",
+                      textDecoration: "none",
+                    }}
+                    ref={(el) => {
+                      if (el) itemRefs.current.set(item.id, el);
+                    }}
+                  >
+                    {item.label}
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Animated underline indicator - positioned at navbar bottom edge */}
+          <div
+            className="absolute bottom-0 left-0 right-0 h-0.5 pointer-events-none"
+          >
+            <div
               style={{
-                fontSize: "var(--font-size-base)",
-                color: "var(--color-text-secondary)",
+                position: "absolute",
+                left: `${indicatorStyle.left}px`,
+                width: `${indicatorStyle.width}px`,
+                height: "100%",
+                backgroundColor: "var(--color-text-high-contrast)",
+                opacity: indicatorStyle.opacity,
+                transition: "left 0.5s cubic-bezier(0.33, 1, 0.68, 1), width 0.5s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease-in-out",
+                willChange: "transform, opacity",
               }}
-            >
-              Features
-            </a>
-            <a
-              href="#pricing"
-              className="transition-colors hover:opacity-80"
-              style={{
-                fontSize: "var(--font-size-base)",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              Pricing
-            </a>
-            <a
-              href="#about"
-              className="transition-colors hover:opacity-80"
-              style={{
-                fontSize: "var(--font-size-base)",
-                color: "var(--color-text-secondary)",
-              }}
-            >
-              About
-            </a>
+            />
           </div>
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-3">
-            <button
+            <a
+              href="https://app.casedelta.com"
               className="hidden sm:block px-5 py-2.5 rounded-lg transition-all hover:opacity-80"
               style={{
                 fontSize: "var(--font-size-base)",
                 fontWeight: "var(--font-weight-medium)",
                 color: "var(--color-text-secondary)",
+                textDecoration: "none",
               }}
+              ref={(el) => {
+                if (el) itemRefs.current.set("sign-in", el);
+              }}
+              onMouseEnter={() => setHoveredItem("sign-in")}
+              onMouseLeave={() => setHoveredItem(null)}
             >
               Sign In
-            </button>
+            </a>
             <button
-              className="px-6 py-2.5 rounded-lg transition-opacity hover:opacity-90"
+              className="px-6 py-2.5 rounded-lg"
               style={{
                 backgroundColor: "var(--color-button-primary)",
                 color: "var(--color-button-primary-text)",
                 fontSize: "var(--font-size-base)",
                 fontWeight: "var(--font-weight-medium)",
+                opacity: 1,
+                transition: "opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = "0.85";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = "1";
               }}
             >
               Get Started
@@ -121,5 +311,93 @@ export function Navbar() {
         </div>
       </div>
     </nav>
+
+      {/* Dropdown Section - Appears BELOW navbar */}
+      <div
+        className="border-t border-b"
+        style={{
+          backgroundColor: "var(--color-surface)",
+          borderColor: "var(--color-border)",
+          paddingTop: openDropdownId ? "32px" : "0px",
+          paddingBottom: openDropdownId ? "32px" : "0px",
+          opacity: openDropdownId ? 1 : 0,
+          maxHeight: openDropdownId ? "600px" : "0px",
+          overflow: "hidden",
+          transition: "padding-top 0.5s cubic-bezier(0.4, 0, 0.2, 1), padding-bottom 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-out, max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          pointerEvents: openDropdownId ? "auto" : "none",
+        }}
+        onMouseEnter={() => openDropdownId && setOpenDropdownId(openDropdownId)}
+        onMouseLeave={() => setOpenDropdownId(null)}
+      >
+        <div className="container">
+          <div
+            key={dropdownContentKey}
+            className="grid gap-4"
+            style={{
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              maxWidth: "1200px",
+              margin: "0 auto",
+              opacity: dropdownContentKey ? 1 : 0,
+              transform: dropdownContentKey ? "translateY(0)" : "translateY(-8px)",
+              transition: "opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
+          >
+            {dropdownContentKey && navigationData
+              .find((item) => item.id === dropdownContentKey)
+              ?.dropdown?.flatMap((section) => section.items)
+              .map((dropdownItem, index) => {
+                const isHovered = hoveredDropdownItem === dropdownItem.title;
+                const hasHoveredItem = hoveredDropdownItem !== null;
+                const isDimmed = hasHoveredItem && !isHovered;
+
+                return (
+                  <a
+                    key={dropdownItem.title}
+                    href={dropdownItem.href}
+                    className="block p-4 rounded-lg transition-all"
+                    style={{
+                      textDecoration: "none",
+                      animation: `dropdownItemFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.04}s both`,
+                      opacity: isDimmed ? 0.35 : 1,
+                      transition: "opacity 0.2s ease-in-out",
+                    }}
+                    onMouseEnter={() => setHoveredDropdownItem(dropdownItem.title)}
+                    onMouseLeave={() => setHoveredDropdownItem(null)}
+                  >
+                    <div
+                      className="font-semibold mb-1 flex items-center gap-2"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        color: "var(--color-text-high-contrast)",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      <span>{dropdownItem.title}</span>
+                      <span
+                        style={{
+                          opacity: isHovered ? 1 : 0,
+                          transform: isHovered ? "translateX(0)" : "translateX(-4px)",
+                          transition: "opacity 0.2s ease-in-out, transform 0.2s ease-in-out",
+                        }}
+                      >
+                        →
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "var(--font-size-small)",
+                        color: "var(--color-text-secondary)",
+                        lineHeight: "var(--line-height-relaxed)",
+                      }}
+                    >
+                      {dropdownItem.description}
+                    </div>
+                  </a>
+                );
+              })}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

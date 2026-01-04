@@ -22,12 +22,12 @@ export function Hero({ variant = "side" }: HeroProps) {
   const scale = useTransform(scrollYProgress, [0, 1], [1, isSideLayout ? 1 : 1.15]);
 
   return (
-    <section className="section">
+    <section className="section" style={{ paddingTop: "6rem", paddingBottom: "6rem" }}>
       <div className="container">
         <div
           className={`${
             isSideLayout
-              ? "grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+              ? "grid grid-cols-1 lg:grid-cols-[45fr_55fr] gap-12 items-center"
               : "flex flex-col items-center text-center max-w-4xl mx-auto"
           }`}
         >
@@ -100,11 +100,12 @@ export function Hero({ variant = "side" }: HeroProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.33, 1, 0.68, 1] }}
-            className="relative aspect-video overflow-hidden"
+            className="relative overflow-hidden"
             style={{
               scale,
               borderRadius: "var(--radius-xl)",
               boxShadow: "var(--shadow-md)",
+              aspectRatio: "4 / 3",
             }}
           >
             <video

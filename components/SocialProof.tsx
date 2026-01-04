@@ -9,8 +9,7 @@ export function SocialProof() {
     "Latham & Watkins",
     "Kirkland & Ellis",
     "DLA Piper",
-    "Skadden Arps",
-    "White & Case",
+    "Skadden Arps"
   ];
 
   return (

@@ -19,6 +19,7 @@ export default function LightFullscreenPage() {
 
         {/* Section Header */}
         <SectionHeader
+          id="workflow-section"
           title="Streamline Your Entire Document Collection Workflow"
           subtitle="Automate reminders, verify uploads, and get the right documents faster—all on one secure platform built specifically for legal professionals."
         />

@@ -284,3 +284,15 @@ a:hover {
     padding: 10rem 0; /* 160px on desktop - matching Rogo's generous spacing */
   }
 }
+
+/* Dropdown animations */
+@keyframes dropdownItemFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

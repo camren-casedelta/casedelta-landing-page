@@ -7,15 +7,17 @@ import { useRef } from "react";
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
+  id?: string;
 }
 
-export function SectionHeader({ title, subtitle }: SectionHeaderProps) {
+export function SectionHeader({ title, subtitle, id }: SectionHeaderProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
     <section
       ref={ref}
+      id={id}
       className="section"
       style={{
         backgroundColor: "var(--color-surface)",

@@ -27,6 +27,7 @@ export function LandingContent({ heroVariant }: LandingContentProps) {
 
         {/* Section Header - Like Harvey's "Augment All of Your Work..." */}
         <SectionHeader
+          id="workflow-section"
           title="Streamline Your Entire Document Collection Workflow"
         />
 
